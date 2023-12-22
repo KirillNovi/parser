@@ -1,0 +1,68 @@
+package org.example;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+import java.awt.*;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) throws IOException, InterruptedException, AWTException {
+        String type = "cafe|";
+        List<String> https = new ArrayList<>();
+        WebDriver driver = new ChromeDriver();
+
+        CSVPrinter csvPrinter = new CSVPrinter(new FileWriter("cafe.csv"), CSVFormat.DEFAULT.withHeader("Название заведения|", "Тип заведения|", "Телефон|", "Сайт|","Адрес|","Метро|","Рейтинг"));
+
+        driver.get("https://yandex.com/maps/213/moscow/category/cafe");
+
+
+        List<WebElement> elements = driver.findElements(By.cssSelector("li.search-snippet-view"));
+        for (WebElement element : elements) {
+            String rating = element.findElement(By.className("business-rating-badge-view__rating")).getText();
+            int rtg = Integer.parseInt(rating.substring(11,12));
+            int rtg1 = Integer.parseInt(rating.substring(9,10));
+            if (rtg>=8||rtg1==5) {
+                String href = element.findElement(By.cssSelector("a")).getAttribute("href");
+                https.add(href);
+            }
+        }
+        for (String http : https) {
+            driver.get(http);
+            String name = driver.findElement(By.className("orgpage-header-view__header")).getText()+"|";
+            String phone = driver.findElement(By.className("card-phones-view__number")).getText();
+            phone = phone.substring(0,18)+"|";
+            String site = driver.findElement(By.className("business-urls-view__link")).getText()+"|";
+            String address = driver.findElement(By.className("business-contacts-view__address-link")).getText();
+            address = address+"|";
+            String metro = driver.findElement(By.className("masstransit-stops-view__stop-name")).getText()+"|";
+            String rating = driver.findElement(By.className("business-rating-badge-view__rating")).getText();
+            rating = rating.substring(9,12);
+
+            csvPrinter.printRecord(name,type,phone,site,address,metro,rating);
+        }
+        csvPrinter.flush();
+
+        driver.quit();
+    }
+    }
+//String type = driver.findElement(By.className("orgpage-categories-info-view")).getText()+"|";
+//FileWriter cafe = new FileWriter("cafe.txt");
+//cafe.write(name+";"+phone+";"+site+";"+address+";"+metro+";"+rating+"\n");
+//cafe.close();
+//
+//js.executeScript("window.scrollBy(0,10000)");
+//Actions action = new Actions(driver);
+//Robot myrobot = new Robot();
+//JavascriptExecutor js = (JavascriptExecutor) driver;
+ //driver.findElements(By.className("scroll__scrollbar-thumb"));
+  //      action.click();
+//myrobot.mouseMove(100,100);
+//myrobot.mouseWheel(10000);
