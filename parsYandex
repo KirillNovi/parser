@@ -5,10 +5,13 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.awt.*;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -22,6 +25,9 @@ public class Main {
 
         WebDriver driver = new ChromeDriver();
         driver.get("https://yandex.com/maps/213/moscow");
+        driver.manage().window().maximize();
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(3));
+
         WebElement element2 = driver.findElement(By.className("search-form-view__input"));
         element2.click();
         WebElement element1 = element2.findElement(By.xpath("//input[@class='input__control _bold']"));
@@ -30,49 +36,39 @@ public class Main {
 
         Thread.sleep(1500);
         myrobot.mouseWheel(105000);
-        Thread.sleep(5000);
+        Thread.sleep(10000);
         //myrobot.mouseWheel(80000);
         //Thread.sleep(10000);
-
-
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(3));
         List<WebElement> elements = driver.findElements(By.cssSelector("li.search-snippet-view"));
         String rating = "";
+        int i=0;
+        String reg = "reviews/";
         for (WebElement element : elements) {
+           /*
+            rating = element.getText();
+            rating = rating.replaceAll("[^0-9,]", "");
+            rating = rating.replace(",", ".");
+            double rtg = Double.parseDouble(rating);
+            if (rtg >= 4.8) {
 
-            if (hasRating(element)){
-                rating = element.findElement(By.cssSelector("div.search-business-snippet-view__rating-and-awards")).getText();
-                if (!rating.isEmpty()) {
-                    rating = rating.replaceAll("[^0-9,]", "");
-                    rating = rating.replace(",", ".");
-                    double rtg = Double.parseDouble(rating);
-                    if (rtg >= 4.8) {
-                        String href = element.findElement(By.cssSelector("a")).getAttribute("href");
-                        https.add(href);
-                        site.write(href + "\n");
-                        System.out.print("|");
-                        Thread.sleep(1000);
-                    }
-                }
-            }
+            */
+                String href = element.findElement(By.cssSelector("a")).getAttribute("href");
+                href=href.replaceAll(reg,"");
+                https.add(href);
+                site.write(href + "\n");
+                i++;
+                System.out.println(i);
+                //Thread.sleep(10000);
+            //}
         }
-        Thread.sleep(10000);
-        site.close();
-        System.out.println("END");
-        Thread.sleep(5000);
-        driver.quit();
+            Thread.sleep(100000);
+            System.out.println("END");
+            //driver.quit();
+            //site.close();
 
 
-
+        }
 
     }
-    public static boolean hasRating (WebElement element){
-        boolean hasRating;
-        try {
-            element.findElement(By.cssSelector("div.search-business-snippet-view__rating-and-awards"));
-            hasRating = true;
-        }catch (NoSuchElementException ex){
-            hasRating = false;
-        }
-        return hasRating;
-    }
-}
+
